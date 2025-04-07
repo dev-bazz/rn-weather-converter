@@ -38,15 +38,22 @@ export const homeStyles = StyleSheet.create({
 	},
 	temperature__title: {
 		color: '#fff',
-		fontSize: normalize(34),
+		fontSize: normalize(38),
 		fontWeight: 'bold',
 		position: 'relative',
 	},
 	temperature__celsius: {
 		position: 'absolute',
 		top: 0,
-		left: 24,
+		right: '30%',
 		textAlign: 'center',
 		color: '#fff',
+		fontWeight: 'bold',
+	},
+	temperature__tempDisplay: {
+		position: 'relative',
+		maxWidth: normalize(200),
+		width: '100%',
+		alignItems: 'center',
 	},
 });

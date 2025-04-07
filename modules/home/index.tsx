@@ -7,7 +7,7 @@ import {
 	type TextInputChangeEventData,
 	type NativeSyntheticEvent,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { homeStyles } from './index.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNormalize } from '@/hooks/normalize.hook';
@@ -20,24 +20,38 @@ export default function HomeView() {
 	};
 	const [bgImage, setBgImage] = useState<keyof typeof bg>('hot');
 	const { normalize } = useNormalize();
-	const [temperature, setTemperature] = useState<string>('0');
+	const [unit, setUnit] = useState<'°C' | '°F'>('°C');
 	const [inputValue, setInputValue] = useState<string>('0');
+	const [outputValue, setOutputValue] = useState<string>('0');
+	const handleTempCalculation = useCallback(
+		(temperature: string) => {
+			let temp: number = 0;
+			if (isNaN(Number(temperature))) return;
+			if (unit === '°C') temp = (Number(temperature) * 9) / 5 + 32;
+			if (unit === '°F') temp = ((Number(temperature) - 32) * 5) / 9;
+			setOutputValue(temperature);
+			setBgImage(temp > 32 ? 'hot' : 'cold');
+			setInputValue(temp?.toFixed(1));
+		},
 
+		[inputValue, unit],
+	);
 	const handleInputValue = (
 		text: NativeSyntheticEvent<TextInputChangeEventData>,
 	) => {
 		console.log('🪲 🪲 index.tsx:25 🪲 text:', text.nativeEvent.text);
-		setInputValue(text.nativeEvent.text ? text.nativeEvent.text : '0');
+		handleTempCalculation(text.nativeEvent.text);
 		return text;
 	};
+
 	return (
 		<ImageBackground
 			source={bg[bgImage]}
 			style={[{ paddingTop: insets.top }, homeStyles.screen]}>
 			<View style={homeStyles.content__wrapper}>
-				<View>
+				<View style={homeStyles.temperature__tempDisplay}>
 					<Text style={homeStyles.temperature__title}>{inputValue}</Text>
-					<Text style={homeStyles.temperature__celsius}>co</Text>
+					<Text style={homeStyles.temperature__celsius}>{unit}</Text>
 				</View>
 				<TextInput
 					maxLength={3}
@@ -49,6 +63,10 @@ export default function HomeView() {
 					onChange={handleInputValue}
 				/>
 				<Pressable
+					onPressIn={() => {
+						setUnit((prev) => (prev === '°C' ? '°F' : '°C'));
+						handleTempCalculation(outputValue);
+					}}
 					style={({ pressed }) => [
 						homeStyles.convertBtn,
 						{
