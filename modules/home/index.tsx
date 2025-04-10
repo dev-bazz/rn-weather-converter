@@ -11,6 +11,7 @@ import React, { useCallback, useState } from 'react';
 import { homeStyles } from './index.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNormalize } from '@/hooks/normalize.hook';
+import RiveApp from '@/comp/rive-a';
 
 export default function HomeView() {
 	const insets = useSafeAreaInsets();
@@ -25,8 +26,8 @@ export default function HomeView() {
 	const [outputValue, setOutputValue] = useState<string>('0');
 	const handleTempCalculation = useCallback(
 		(temperature: string) => {
-			let temp: number = 0;
-			if (isNaN(Number(temperature))) return;
+			let temp = 0;
+			if (Number.isNaN(Number(temperature))) return;
 			if (unit === '°C') temp = (Number(temperature) * 9) / 5 + 32;
 			if (unit === '°F') temp = ((Number(temperature) - 32) * 5) / 9;
 			setOutputValue(temperature);
@@ -34,7 +35,7 @@ export default function HomeView() {
 			setInputValue(temp?.toFixed(1));
 		},
 
-		[inputValue, unit],
+		[unit],
 	);
 	const handleInputValue = (
 		text: NativeSyntheticEvent<TextInputChangeEventData>,
@@ -79,6 +80,7 @@ export default function HomeView() {
 					]}>
 					<Text style={homeStyles.btnText}>Convert</Text>
 				</Pressable>
+				<RiveApp />
 			</View>
 		</ImageBackground>
 	);
